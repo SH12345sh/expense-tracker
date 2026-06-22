@@ -4,6 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
+DB_PATH = os.path.join(basedir, 'expenses.db')
 app.secret_key = 'your_super_secret_session_passcode_here' # <-- ADD THIS LINE
 
 # --- 1. HOME / LANDING PAGE ---
@@ -26,7 +28,7 @@ def signup():
         hashed_password = generate_password_hash(password)
         
         # 1. Open the connection BEFORE the try block so it's accessible everywhere
-        conn = sqlite3.connect("expenses.db", timeout=10) # Added timeout safety helper
+        conn = sqlite3.connect(DB_PATH, timeout=10) # Added timeout safety helper
         cursor = conn.cursor()
         
         try:
@@ -51,7 +53,7 @@ def login():
         username = request.form['username'].strip()
         password = request.form['password'].strip()
         
-        conn = sqlite3.connect("expenses.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
         user = cursor.fetchone()
@@ -81,7 +83,7 @@ def dashboard():
     # Get the current logged-in user's ID from the active session
     current_user_id = session['user_id']
 
-    conn = sqlite3.connect("expenses.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # 2. Filter expenses count for just THIS user
@@ -147,7 +149,7 @@ def add_expense():
         date = request.form['date']
         user_id = session['user_id'] # <-- Pull the active user identification token
 
-        conn = sqlite3.connect("expenses.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         # UPDATED: Insert the user_id alongside your metric entries
@@ -177,7 +179,7 @@ def income():
         date = request.form['date']
         user_id = session['user_id'] # <-- Pull the active user identification token
 
-        conn = sqlite3.connect("expenses.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         # UPDATED: Insert the user_id alongside your metric entries
@@ -196,7 +198,7 @@ def income():
 
 @app.route("/history")
 def history():
-    conn = sqlite3.connect("expenses.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     search_inc = request.args.get("search_income", "")
@@ -236,7 +238,7 @@ def history():
 @app.route('/delete/<int:id>')
 def delete(id):
 
-    conn = sqlite3.connect("expenses.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("DELETE FROM expenses WHERE id=?", (id,))
@@ -249,7 +251,7 @@ def delete(id):
 @app.route('/reports')
 def reports():
 
-    conn = sqlite3.connect("expenses.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("SELECT SUM(CAST(amount AS INTEGER)) FROM income")
@@ -293,7 +295,7 @@ def edit_expense(id):
         return redirect(url_for('login'))
         
     current_user_id = session['user_id']
-    conn = sqlite3.connect("expenses.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     if request.method == 'POST':
@@ -337,7 +339,7 @@ def edit_expense(id):
 @app.route('/delete_income/<int:id>')
 def delete_income(id):
 
-    conn = sqlite3.connect("expenses.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute(
@@ -357,7 +359,7 @@ def edit_income(id):
         return redirect(url_for('login'))
         
     current_user_id = session['user_id']
-    conn = sqlite3.connect("expenses.db")
+    conn = sqlite3.connect("DB_PATH")
     cursor = conn.cursor()
 
     if request.method == 'POST':
@@ -406,7 +408,7 @@ def settings():
     user_id = session['user_id']
     db_path = os.path.join('/data', 'expenses.db') if os.path.isdir('/data') else 'expenses.db'
     
-    conn = sqlite3.connect(db_path, timeout=10)
+    conn = sqlite3.connect(DB_PATH, timeout=10)
     cursor = conn.cursor()
     
     # Safely verify that our columns exist in the database (migration check)
@@ -466,5 +468,48 @@ def security_activity():
 # This forces Render/Gunicorn to only use 1 worker process automatically
 os.environ['WEB_CONCURRENCY'] = '1'
 
+def init_db():
+    conn = sqlite3.connect(DB_PATH, timeout=10)
+    cursor = conn.cursor()
+    
+    # 1. Users table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+    ''')
+    
+    # 2. Expenses table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount REAL NOT NULL,
+            category TEXT NOT NULL,
+            date TEXT NOT NULL,
+            user_id INTEGER,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    ''')
+
+    # 🌟 FIX: Add the missing Income table!
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS income (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount REAL NOT NULL,
+            category TEXT NOT NULL,
+            date TEXT NOT NULL,
+            user_id INTEGER,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
 if __name__ == '__main__':
+    # Run the database creator first!
+    init_db() 
+    # Then start your app
     app.run(debug=True)
