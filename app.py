@@ -463,5 +463,8 @@ def security_activity():
     # Simple mockup routing page displaying isolated active instance access points
     return "<body style='font-family:sans-serif; padding:40px; background:#f1f5f9;'><div style='background:white; padding:30px; border-radius:8px; max-width:500px; margin:auto;'><h2>Login Activity Logs</h2><hr><p>🟢 Session Active now - Current Web Browser Instance Node</p><p style='color:#64748b;'>Last login authentication checklist verified successfully today.</p><br><a href='/settings' style='color:#3b82f6;'>&larr; Back to Settings</a></div></body>"
 
+# This forces Render/Gunicorn to only use 1 worker process automatically
+os.environ['WEB_CONCURRENCY'] = '1'
+
 if __name__ == '__main__':
     app.run(debug=True)
