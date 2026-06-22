@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<!-- Paste this right at the bottom of index.html to make it support the theme tracking framework! -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem('app-theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    });
+</script>
+
+<body>
+
+<div class="navbar">
+    <a href="/" class="active">Dashboard</a>
+    <a href="/add">Add Expense</a>
+    <a href="/history">History</a>
+    <a href="/income">Income</a>
+    <a href="/reports">Reports</a>
+    
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+        <!-- Fixed: Using a native SVG gear icon. It will always display perfectly. -->
+        <a href="/settings" title="Settings" style="display: flex; align-items: center; text-decoration: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </a>
+        <a href="/logout" style="color: #ef4444; font-size: 15px; text-decoration: none;">Logout ({{ session['username'] }})</a>
+    </div>
+</div>
+
+<div class="dashboard-container">
+
+    <h1 class="page-title">Financial Overview</h1>
+
+    <div class="metrics-grid">
+
+        <div class="metric-card income">
+            <h3>Total Income</h3>
+            <h2>₹ {{ total_income }}</h2>
+        </div>
+
+        <div class="metric-card expense">
+            <h3>Total Expense</h3>
+            <h2>₹ {{ total }}</h2>
+        </div>
+
+        <div class="metric-card balance">
+            <h3>Current Balance</h3>
+            <h2>₹ {{ balance }}</h2>
+        </div>
+
+        <div class="metric-card neutral">
+            <h3>Total Transactions</h3>
+            <h2>{{ transaction_count }}</h2>
+        </div>
+
+        <div class="metric-card warning">
+            <h3>Highest Expense</h3>
+            <h2>₹ {{ highest_expense }}</h2>
+        </div>
+
+    </div>
+
+    <div class="table-section">
+        <h2>Recent Expenses</h2>
+
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in recent_expenses %}
+                <tr>
+                    <td class="text-danger">₹ {{ expense[0] }}</td>
+                    <td>{{ expense[1] }}</td>
+                    <td>{{ expense[2] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

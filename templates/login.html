@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<!-- Paste this right at the bottom of index.html to make it support the theme tracking framework! -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem('app-theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    });
+</script>
+
+<body>
+
+<div class="navbar">
+    <a href="/">💰 ExpenseTracker</a>
+</div>
+
+<div class="dashboard-container">
+    <h1 class="page-title" style="text-align: center;">Welcome Back</h1>
+
+    <div class="table-section" style="max-width: 450px; margin: 0 auto; border-top: 4px solid #3b82f6;">
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Enter your username" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter your password" required class="form-control">
+            </div>
+
+            <button type="submit" class="btn-submit" style="width: 100%; margin-top: 10px; margin-bottom: 15px;">Sign In</button>
+            
+            <p style="text-align: center; font-size: 14px; color: #64748b;">
+                New to the system? <a href="/signup" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Create an account</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

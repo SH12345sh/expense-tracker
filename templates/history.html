@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<!-- Paste this right at the bottom of index.html to make it support the theme tracking framework! -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem('app-theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    });
+</script>
+
+<body>
+
+<div class="navbar">
+    <a href="/">Dashboard</a>
+    <a href="/add">Add Expense</a>
+    <a href="/history" class="active">History</a>
+    <a href="/income">Income</a>
+    <a href="/reports">Reports</a>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+        <!-- Fixed: Using a native SVG gear icon. It will always display perfectly. -->
+        <a href="/settings" title="Settings" style="display: flex; align-items: center; text-decoration: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </a>
+        <a href="/logout" style="color: #ef4444; font-size: 15px; text-decoration: none;">Logout ({{ session['username'] }})</a>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <h1 class="page-title">Financial History</h1>
+
+    <div class="table-section">
+        <h2 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px;">Income Records</h2>
+        
+        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+            <input type="text" id="incomeSearchInput" placeholder="Search Income Source (e.g., Salary)..." class="form-control" style="margin-bottom: 0; flex: 1;">
+            <button type="button" onclick="performSearch()" class="btn-submit" style="width: auto;">Search Income</button>
+        </div>
+
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Source</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="incomeTableBody">
+                {% for income in incomes %}
+                <tr>
+                    <td class="text-success">₹ {{ income[1] }}</td>
+                    <td>{{ income[2] }}</td>
+                    <td>{{ income[3] }}</td>
+                    <td>
+                        <a href="/edit_income/{{ income[0] }}" class="action-link edit">Edit</a>
+                        <span style="color: #cbd5e1; margin: 0 5px;">|</span>
+                        <a href="/delete_income/{{ income[0] }}" class="action-link delete" onclick="return confirm('Are you sure you want to delete this income record?');">Delete</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #64748b; padding: 20px;">No income records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-section">
+        <h2 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px;">Expense Records</h2>
+        
+        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+            <input type="text" id="expenseSearchInput" placeholder="Search Expense Category (e.g., Food)..." class="form-control" style="margin-bottom: 0; flex: 1;">
+            <button type="button" onclick="performSearch()" class="btn-submit" style="width: auto;">Search Expenses</button>
+        </div>
+
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="expenseTableBody">
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense[0] }}</td>
+                    <td class="text-danger">₹ {{ expense[1] }}</td>
+                    <td>{{ expense[2] }}</td>
+                    <td>{{ expense[3] }}</td>
+                    <td>
+                        <a href="/edit/{{ expense[0] }}" class="action-link edit">Edit</a>
+                        <span style="color: #cbd5e1; margin: 0 5px;">|</span>
+                        <a href="/delete/{{ expense[0] }}" class="action-link delete" onclick="return confirm('Are you sure you want to delete this expense record?');">Delete</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">No expense records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// 1. Add event listeners to detect the "Enter" key inside the search boxes
+document.getElementById('incomeSearchInput').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Stop default browser behavior
+        performSearch();
+    }
+});
+
+document.getElementById('expenseSearchInput').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Stop default browser behavior
+        performSearch();
+    }
+});
+
+// 2. Your existing core search function
+function performSearch() {
+    const incomeQuery = document.getElementById('incomeSearchInput').value;
+    const expenseQuery = document.getElementById('expenseSearchInput').value;
+
+    const url = `/history?search_income=${encodeURIComponent(incomeQuery)}&search_expense=${encodeURIComponent(expenseQuery)}`;
+
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update Income Table
+        const incomeBody = document.getElementById('incomeTableBody');
+        incomeBody.innerHTML = '';
+        
+        if(data.incomes.length === 0) {
+            incomeBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 20px;">No income records found matching search.</td></tr>`;
+        } else {
+            data.incomes.forEach(income => {
+                incomeBody.innerHTML += `
+                    <tr>
+                        <td class="text-success">₹ ${income[1]}</td>
+                        <td>${income[2]}</td>
+                        <td>${income[3]}</td>
+                        <td>
+                            <a href="/edit_income/${income[0]}" class="action-link edit">Edit</a>
+                            <span style="color: #cbd5e1; margin: 0 5px;">|</span>
+                            <a href="/delete_income/${income[0]}" class="action-link delete" onclick="return confirm('Are you sure?');">Delete</a>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // Update Expense Table
+        const expenseBody = document.getElementById('expenseTableBody');
+        expenseBody.innerHTML = '';
+        
+        if(data.expenses.length === 0) {
+            expenseBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">No expense records found matching search.</td></tr>`;
+        } else {
+            data.expenses.forEach(expense => {
+                expenseBody.innerHTML += `
+                    <tr>
+                        <td>${expense[0]}</td>
+                        <td class="text-danger">₹ ${expense[1]}</td>
+                        <td>${expense[2]}</td>
+                        <td>${expense[3]}</td>
+                        <td>
+                            <a href="/edit/${expense[0]}" class="action-link edit">Edit</a>
+                            <span style="color: #cbd5e1; margin: 0 5px;">|</span>
+                            <a href="/delete/${expense[0]}" class="action-link delete" onclick="return confirm('Are you sure?');">Delete</a>
+                        </td>
+                    </tr>`;
+            });
+        }
+    })
+    .catch(error => console.error('Error fetching search data:', error));
+}
+</script>
+
+</body>
+</html>

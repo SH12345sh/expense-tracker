@@ -1,0 +1,258 @@
+/* Global Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f8f9fa; /* Slightly softer light grey */
+    color: #333;
+    line-height: 1.5;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #1e293b; /* Modern Slate Dark Blue instead of harsh pure black */
+    padding: 15px 40px;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.navbar a:hover, .navbar a.active {
+    color: #ffffff;
+}
+
+/* Dashboard Wrapper */
+.dashboard-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.page-title {
+    margin-bottom: 25px;
+    font-size: 28px;
+    color: #0f172a;
+}
+
+/* Modern Dashboard Grid Layout */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+/* Professional White Cards with Subtle Accents */
+.metric-card {
+    background-color: #ffffff; /* Changed from shorthand background to background-color */
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border-left: 5px solid #cbd5e1; /* Default slate border */
+    transition: transform 0.2s ease, background-color 0.2s ease; /* Smooth transition added here */
+}
+
+/* UNIQUE SOFT HOVER STATE */
+.metric-card:hover {
+    transform: translateY(-2px); /* Premium subtle lift on hover */
+    background-color: #e2e8f0; /* Beautiful premium light slate shade */
+}
+
+.metric-card h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b; /* Soft gray for titles */
+    margin-bottom: 8px;
+}
+
+.metric-card h2 {
+    font-size: 26px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+/* Contextual Colors (This instantly upgrades professionalism) */
+.metric-card.income { border-left-color: #10b981; }  /* Green */
+.metric-card.expense { border-left-color: #ef4444; } /* Red */
+.metric-card.balance { border-left-color: #3b82f6; } /* Blue */
+.metric-card.warning { border-left-color: #f59e0b; } /* Amber */
+.metric-card.neutral { border-left-color: #64748b; } /* Slate Blue */
+
+/* Table Styling Layout */
+.table-section {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+}
+
+.table-section h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #0f172a;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.custom-table th {
+    background-color: #f1f5f9;
+    color: #475569;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.custom-table td {
+    padding: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+    font-size: 15px;
+}
+
+.text-danger {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.text-success {
+    color: #10b981;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   ADDED FOR FORMS: Matching your Slate/White Premium Aesthetic Perfectly
+   ========================================================================== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+    color: #334155;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: #3b82f6; /* Subtle blue focus glow */
+}
+
+.btn-submit {
+    padding: 12px 24px;
+    background-color: #1e293b; /* Matches dark navbar */
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: #334155;
+}
+
+.action-link {
+    text-decoration: none;
+    font-weight: 600;
+}
+.action-link.edit { color: #3b82f6; }
+.action-link.delete { color: #ef4444; }
+
+/* ==========================================================================
+   GLOBAL DARK MODE EXTENSION 
+   ========================================================================== */
+
+/* 1. Base Body Background & Text Colors */
+body.dark-mode {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+}
+
+/* 2. Navigation Bar Layout */
+body.dark-mode .navbar {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155 !important;
+}
+body.dark-mode .navbar a {
+    color: #94a3b8 !important;
+}
+body.dark-mode .navbar a.active, body.dark-mode .navbar a:hover {
+    color: #ffffff !important;
+    background-color: #334155 !important;
+}
+
+/* 3. Metrics Cards adjustments */
+body.dark-mode .metric-card {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+}
+body.dark-mode .metric-card h2, body.dark-mode .metric-card h3 {
+    color: #f8fafc !important;
+}
+
+/* 4. Tables and Containers Sections */
+body.dark-mode .table-section {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+}
+body.dark-mode .table-section h2, body.dark-mode .table-section h3 {
+    color: #f8fafc !important;
+}
+
+/* 5. Custom Table Elements */
+body.dark-mode .custom-table th {
+    background-color: #334155 !important;
+    color: #f8fafc !important;
+    border-bottom: 2px solid #475569 !important;
+}
+body.dark-mode .custom-table td {
+    color: #cbd5e1 !important;
+    border-bottom: 1px solid #334155 !important;
+}
+body.dark-mode .custom-table tr:hover {
+    background-color: #243249 !important;
+}
+
+/* 6. Form Controls and Inputs */
+body.dark-mode .form-control, body.dark-mode input {
+    background-color: #0f172a !important;
+    border: 1px solid #475569 !important;
+    color: #f8fafc !important;
+}
+body.dark-mode label {
+    color: #94a3b8 !important;
+}

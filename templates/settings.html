@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root {
+            --panel-bg: #ffffff;
+            --panel-border: #e2e8f0;
+            --text-title: #0f172a;
+            --text-desc: #64748b;
+            --input-fill: #ffffff;
+        }
+
+        body.dark-mode {
+            --panel-bg: #1e293b;
+            --panel-border: #334155;
+            --text-title: #f8fafc;
+            --text-desc: #94a3b8;
+            --input-fill: #0f172a;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            transition: background-color 0.2s;
+        }
+
+        .panel-layout {
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .panel-card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .panel-header {
+            margin-bottom: 20px;
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--text-title);
+            font-weight: 600;
+        }
+
+        .panel-header p {
+            margin: 4px 0 0 0;
+            font-size: 13px;
+            color: var(--text-desc);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-title);
+        }
+
+        .ctrl-input, .ctrl-select {
+            padding: 10px;
+            background-color: var(--input-fill);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            color: var(--text-title);
+            font-size: 14px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s;
+        }
+        .action-btn:hover { opacity: 0.9; }
+        .btn-blue { background-color: #3b82f6; color: white; }
+        .btn-gray { background-color: #64748b; color: white; }
+        .btn-red { background-color: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/">Dashboard</a>
+    <a href="/add">Add Expense</a>
+    <a href="/history">History</a>
+    <a href="/income">Income</a>
+    <a href="/reports">Reports</a>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+        <a href="/settings" title="Settings" style="display: flex; align-items: center; text-decoration: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </a>
+        <a href="/logout" style="color: #ef4444; font-size: 15px; text-decoration: none;">Logout ({{ session['username'] }})</a>
+    </div>
+</div>
+
+<div class="panel-layout">
+    <h1 class="page-title" style="margin-bottom: 24px; font-weight: 700; color: var(--text-title);">System Settings</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div style="padding: 12px; margin-bottom: 24px; border-radius: 6px; background-color: #d1fae5; color: #065f46; font-size: 14px; font-weight: 500;">
+              ✔ {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="panel-card">
+        <div class="panel-header">
+            <h3>Interface Theme</h3>
+            <p>Switch your application viewing layout preference styling instantly.</p>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="themeStatus" style="font-size: 14px; font-weight: 500; color: var(--text-title);">Light Mode Active</span>
+            <button onclick="toggleTheme()" class="action-btn btn-gray">Toggle Theme</button>
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <div class="panel-header">
+            <h3>Financial Tracker Engine Configuration</h3>
+            <p>Customize your tracking metrics parameters and targets directly.</p>
+        </div>
+        <form method="POST" action="/settings">
+            <input type="hidden" name="action" value="update_finance">
+            
+            <div class="form-row">
+                <div class="field-group">
+                    <label>Monthly Budget Cap</label>
+                    <input type="number" step="0.01" name="monthly_budget" value="{{ user_data[1] }}" class="ctrl-input">
+                </div>
+                <div class="field-group">
+                    <label>Alert Threshold (%)</label>
+                    <input type="number" min="1" max="100" name="budget_threshold" value="{{ user_data[2] if user_data[2] else 80 }}" class="ctrl-input">
+                </div>
+                <div class="field-group">
+                    <label>Preferred Currency Symbol</label>
+                    <select name="currency" class="ctrl-select">
+                        <option value="₹" {% if user_data[3] == '₹' %}selected{% endif %}>₹ (INR)</option>
+                        <option value="$" {% if user_data[3] == '$' %}selected{% endif %}>$ (USD)</option>
+                        <option value="€" {% if user_data[3] == '€' %}selected{% endif %}>€ (EUR)</option>
+                        <option value="£" {% if user_data[3] == '£' %}selected{% endif %}>£ (GBP)</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="action-btn btn-blue" style="width: 100%;">Save Preferences</button>
+        </form>
+    </div>
+
+    <div class="panel-card" style="border-top: 3px solid #ef4444;">
+        <div class="panel-header">
+            <h3>Data Management</h3>
+            <p>Perform basic core data maintenance operations on your localized storage file.</p>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h4 style="margin: 0; font-size: 14px; color: var(--text-title); font-weight: 500;">Clear Transaction History</h4>
+                <p style="margin: 2px 0 0 0; font-size: 12px; color: var(--text-desc);">Wipe your expense and income rows cleanly while keeping your login account active.</p>
+            </div>
+            <form method="POST" action="/settings" onsubmit="return confirm('Wipe out all transaction ledger logs permanently?');">
+                <input type="hidden" name="action" value="clear_history">
+                <button type="submit" class="action-btn btn-red">Wipe Logs</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function applyTheme(theme) {
+        const label = document.getElementById('themeStatus');
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+            if(label) label.textContent = "Dark Mode Active 🌙";
+        } else {
+            document.body.classList.remove('dark-mode');
+            if(label) label.textContent = "Light Mode Active ☀️";
+        }
+    }
+
+    function toggleTheme() {
+        const current = localStorage.getItem('app-theme') || 'light';
+        const target = current === 'light' ? 'dark' : 'light';
+        localStorage.setItem('app-theme', target);
+        applyTheme(target);
+    }
+
+    applyTheme(localStorage.getItem('app-theme') || 'light');
+</script>
+</body>
+</html>

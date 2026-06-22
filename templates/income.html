@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<!-- Paste this right at the bottom of index.html to make it support the theme tracking framework! -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem('app-theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    });
+</script>
+
+<body>
+
+<div class="navbar">
+    <a href="/">Dashboard</a>
+    <a href="/add">Add Expense</a>
+    <a href="/history">History</a>
+    <a href="/income" class="active">Income</a>
+    <a href="/reports">Reports</a>
+    
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+        <a href="/settings" title="Settings" style="display: flex; align-items: center; text-decoration: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </a>
+        <a href="/logout" style="color: #ef4444; font-size: 15px; text-decoration: none;">Logout ({{ session['username'] }})</a>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <h1 class="page-title" style="text-align: center; margin-bottom: 25px;">Add New Income</h1>
+
+    <div class="table-section" style="max-width: 600px; margin: 0 auto;">
+        <form method="POST">
+            <div class="form-group">
+                <label>Amount</label>
+                <input type="number" step="0.01" name="amount" placeholder="Enter income amount" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Source</label>
+                <select name="source" class="form-control">
+                    <option>Salary</option>
+                    <option>Business</option>
+                    <option>Freelance</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" name="date" required class="form-control">
+            </div>
+
+            <button type="submit" class="btn-submit">Add Income</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
