@@ -271,16 +271,17 @@ html, body {
 
 .site-footer {
     flex-shrink: 0;
-    background-color: #2c3e50; /* Clean slate-dark blue background */
-    color: #ffffff;            /* White text */
+    background-color: #2c3e50;
+    color: #ffffff;
     text-align: center;
-    padding: 15px 0;
+    padding: 8px 0;          /* 🌟 CHANGED: Cut vertical padding in half (from 15px to 8px) */
     width: 100%;
     font-family: Arial, sans-serif;
-    font-size: 14px;
-    margin-top: 30px;
+    font-size: 13px;         /* 🌟 CHANGED: Made text slightly smaller to fit elegantly */
+    margin-top: auto;
 }
 
 .footer-content p {
-    margin: 5px 0;
+    margin: 2px 0;           /* 🌟 CHANGED: Reduced space between the text rows */
+    opacity: 0.85;           /* Softens text color slightly for a premium feel */
 }
