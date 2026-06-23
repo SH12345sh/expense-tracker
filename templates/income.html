@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<!-- Paste this right at the bottom of index.html to make it support the theme tracking framework! -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         if (localStorage.getItem('app-theme') === 'dark') {
@@ -48,11 +47,12 @@
 
             <div class="form-group">
                 <label>Source</label>
-                <select name="source" class="form-control">
-                    <option>Salary</option>
-                    <option>Business</option>
-                    <option>Freelance</option>
-                    <option>Other</option>
+                <select name="source" class="form-control" required>
+                    <option value="" disabled selected hidden>Choose Source</option>
+                    <option value="Salary">Salary</option>
+                    <option value="Business">Business</option>
+                    <option value="Freelance">Freelance</option>
+                    <option value="Other">Other</option>
                 </select>
             </div>
 

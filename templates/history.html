@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<!-- Paste this right at the bottom of index.html to make it support the theme tracking framework! -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         if (localStorage.getItem('app-theme') === 'dark') {
@@ -25,7 +24,6 @@
     <a href="/income">Income</a>
     <a href="/reports">Reports</a>
     <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
-        <!-- Fixed: Using a native SVG gear icon. It will always display perfectly. -->
         <a href="/settings" title="Settings" style="display: flex; align-items: center; text-decoration: none;">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
@@ -42,9 +40,8 @@
     <div class="table-section">
         <h2 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px;">Income Records</h2>
         
-        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-            <input type="text" id="incomeSearchInput" placeholder="Search Income Source (e.g., Salary)..." class="form-control" style="margin-bottom: 0; flex: 1;">
-            <button type="button" onclick="performSearch()" class="btn-submit" style="width: auto;">Search Income</button>
+        <div style="margin-bottom: 20px;">
+            <input type="text" id="incomeSearchInput" placeholder="Type to filter income sources instantly..." class="form-control" style="margin-bottom: 0; width: 100%;">
         </div>
 
         <table class="custom-table">
@@ -69,7 +66,7 @@
                     </td>
                 </tr>
                 {% else %}
-                <tr>
+                <tr class="no-data-row">
                     <td colspan="4" style="text-align: center; color: #64748b; padding: 20px;">No income records found.</td>
                 </tr>
                 {% endfor %}
@@ -80,9 +77,8 @@
     <div class="table-section">
         <h2 style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px;">Expense Records</h2>
         
-        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-            <input type="text" id="expenseSearchInput" placeholder="Search Expense Category (e.g., Food)..." class="form-control" style="margin-bottom: 0; flex: 1;">
-            <button type="button" onclick="performSearch()" class="btn-submit" style="width: auto;">Search Expenses</button>
+        <div style="margin-bottom: 20px;">
+            <input type="text" id="expenseSearchInput" placeholder="Type to filter expense categories instantly..." class="form-control" style="margin-bottom: 0; width: 100%;">
         </div>
 
         <table class="custom-table">
@@ -109,7 +105,7 @@
                     </td>
                 </tr>
                 {% else %}
-                <tr>
+                <tr class="no-data-row">
                     <td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">No expense records found.</td>
                 </tr>
                 {% endfor %}
@@ -119,82 +115,90 @@
 </div>
 
 <script>
-// 1. Add event listeners to detect the "Enter" key inside the search boxes
-document.getElementById('incomeSearchInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Stop default browser behavior
-        performSearch();
+document.ready = function() { /* Fallback framework reference */ };
+
+// 🌟 1. Instant Client-Side Filter for Income Table
+document.getElementById('incomeSearchInput').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#incomeTableBody tr:not(.no-data-row)');
+    let hasVisibleRows = false;
+
+    rows.forEach(row => {
+        // Search across Amount (index 0) and Source (index 1)
+        const amount = row.cells[0].textContent.toLowerCase();
+        const source = row.cells[1].textContent.toLowerCase();
+
+        if (amount.includes(filter) || source.includes(filter)) {
+            row.style.display = '';
+            hasVisibleRows = true;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // Check if we need to show a "No results matching" state
+    let noDataRow = document.querySelector('#incomeTableBody .search-no-data');
+    if (!hasVisibleRows && filter !== '') {
+        if (!noDataRow) {
+            noDataRow = document.createElement('tr');
+            noDataRow.className = 'search-no-data';
+            noDataRow.innerHTML = `<td colspan="4" style="text-align: center; color: #64748b; padding: 20px;">No income records match your search.</td>`;
+            document.getElementById('incomeTableBody').appendChild(noDataRow);
+        }
+    } else if (noDataRow) {
+        noDataRow.remove();
     }
 });
 
-document.getElementById('expenseSearchInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Stop default browser behavior
-        performSearch();
+// 🌟 2. Instant Client-Side Filter for Expense Table
+// 🌟 2. Instant Client-Side Filter for Expense Table (Fully Closed & Fixed)
+document.getElementById('expenseSearchInput').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#expenseTableBody tr:not(.no-data-row)');
+    let hasVisibleRows = false;
+
+    rows.forEach(row => {
+        // Safe check: ensure the row actually has cells before grabbing text
+        if (row.cells && row.cells.length >= 3) {
+            const amount = row.cells[1].textContent.toLowerCase();
+            const category = row.cells[2].textContent.toLowerCase();
+
+            if (amount.includes(filter) || category.includes(filter)) {
+                row.style.display = '';
+                hasVisibleRows = true;
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }); // <--- 🌟 This closing loop bracket was missing or broken!
+
+    // Check if we need to show a "No results matching" state
+    let noDataRow = document.querySelector('#expenseTableBody .search-no-data');
+    if (!hasVisibleRows && filter !== '') {
+        if (!noDataRow) {
+            noDataRow = document.createElement('tr');
+            noDataRow.className = 'search-no-data';
+            noDataRow.innerHTML = `<td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">No expense records match your search.</td>`;
+            document.getElementById('expenseTableBody').appendChild(noDataRow);
+        }
+    } else if (noDataRow) {
+        noDataRow.remove();
     }
 });
 
-// 2. Your existing core search function
-function performSearch() {
-    const incomeQuery = document.getElementById('incomeSearchInput').value;
-    const expenseQuery = document.getElementById('expenseSearchInput').value;
-
-    const url = `/history?search_income=${encodeURIComponent(incomeQuery)}&search_expense=${encodeURIComponent(expenseQuery)}`;
-
-    fetch(url, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
+    // Check if we need to show a "No results matching" state
+    let noDataRow = document.querySelector('#expenseTableBody .search-no-data');
+    if (!hasVisibleRows && filter !== '') {
+        if (!noDataRow) {
+            noDataRow = document.createElement('tr');
+            noDataRow.className = 'search-no-data';
+            noDataRow.innerHTML = `<td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">No expense records match your search.</td>`;
+            document.getElementById('expenseTableBody').appendChild(noDataRow);
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Update Income Table
-        const incomeBody = document.getElementById('incomeTableBody');
-        incomeBody.innerHTML = '';
-        
-        if(data.incomes.length === 0) {
-            incomeBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #64748b; padding: 20px;">No income records found matching search.</td></tr>`;
-        } else {
-            data.incomes.forEach(income => {
-                incomeBody.innerHTML += `
-                    <tr>
-                        <td class="text-success">₹ ${income[1]}</td>
-                        <td>${income[2]}</td>
-                        <td>${income[3]}</td>
-                        <td>
-                            <a href="/edit_income/${income[0]}" class="action-link edit">Edit</a>
-                            <span style="color: #cbd5e1; margin: 0 5px;">|</span>
-                            <a href="/delete_income/${income[0]}" class="action-link delete" onclick="return confirm('Are you sure?');">Delete</a>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        // Update Expense Table
-        const expenseBody = document.getElementById('expenseTableBody');
-        expenseBody.innerHTML = '';
-        
-        if(data.expenses.length === 0) {
-            expenseBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">No expense records found matching search.</td></tr>`;
-        } else {
-            data.expenses.forEach(expense => {
-                expenseBody.innerHTML += `
-                    <tr>
-                        <td>${expense[0]}</td>
-                        <td class="text-danger">₹ ${expense[1]}</td>
-                        <td>${expense[2]}</td>
-                        <td>${expense[3]}</td>
-                        <td>
-                            <a href="/edit/${expense[0]}" class="action-link edit">Edit</a>
-                            <span style="color: #cbd5e1; margin: 0 5px;">|</span>
-                            <a href="/delete/${expense[0]}" class="action-link delete" onclick="return confirm('Are you sure?');">Delete</a>
-                        </td>
-                    </tr>`;
-            });
-        }
-    })
-    .catch(error => console.error('Error fetching search data:', error));
-}
+    } else if (noDataRow) {
+        noDataRow.remove();
+    }
+});
 </script>
 
 {% include 'footer.html' %}
