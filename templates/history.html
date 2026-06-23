@@ -115,8 +115,6 @@
 </div>
 
 <script>
-document.ready = function() { /* Fallback framework reference */ };
-
 // 🌟 1. Instant Client-Side Filter for Income Table
 document.getElementById('incomeSearchInput').addEventListener('input', function() {
     const filter = this.value.toLowerCase();
@@ -124,19 +122,19 @@ document.getElementById('incomeSearchInput').addEventListener('input', function(
     let hasVisibleRows = false;
 
     rows.forEach(row => {
-        // Search across Amount (index 0) and Source (index 1)
-        const amount = row.cells[0].textContent.toLowerCase();
-        const source = row.cells[1].textContent.toLowerCase();
+        if (row.cells && row.cells.length >= 2) {
+            const amount = row.cells[0].textContent.toLowerCase();
+            const source = row.cells[1].textContent.toLowerCase();
 
-        if (amount.includes(filter) || source.includes(filter)) {
-            row.style.display = '';
-            hasVisibleRows = true;
-        } else {
-            row.style.display = 'none';
+            if (amount.includes(filter) || source.includes(filter)) {
+                row.style.display = '';
+                hasVisibleRows = true;
+            } else {
+                row.style.display = 'none';
+            }
         }
     });
 
-    // Check if we need to show a "No results matching" state
     let noDataRow = document.querySelector('#incomeTableBody .search-no-data');
     if (!hasVisibleRows && filter !== '') {
         if (!noDataRow) {
@@ -151,14 +149,12 @@ document.getElementById('incomeSearchInput').addEventListener('input', function(
 });
 
 // 🌟 2. Instant Client-Side Filter for Expense Table
-// 🌟 2. Instant Client-Side Filter for Expense Table (Fully Closed & Fixed)
 document.getElementById('expenseSearchInput').addEventListener('input', function() {
     const filter = this.value.toLowerCase();
     const rows = document.querySelectorAll('#expenseTableBody tr:not(.no-data-row)');
     let hasVisibleRows = false;
 
     rows.forEach(row => {
-        // Safe check: ensure the row actually has cells before grabbing text
         if (row.cells && row.cells.length >= 3) {
             const amount = row.cells[1].textContent.toLowerCase();
             const category = row.cells[2].textContent.toLowerCase();
@@ -170,23 +166,8 @@ document.getElementById('expenseSearchInput').addEventListener('input', function
                 row.style.display = 'none';
             }
         }
-    }); // <--- 🌟 This closing loop bracket was missing or broken!
+    });
 
-    // Check if we need to show a "No results matching" state
-    let noDataRow = document.querySelector('#expenseTableBody .search-no-data');
-    if (!hasVisibleRows && filter !== '') {
-        if (!noDataRow) {
-            noDataRow = document.createElement('tr');
-            noDataRow.className = 'search-no-data';
-            noDataRow.innerHTML = `<td colspan="5" style="text-align: center; color: #64748b; padding: 20px;">No expense records match your search.</td>`;
-            document.getElementById('expenseTableBody').appendChild(noDataRow);
-        }
-    } else if (noDataRow) {
-        noDataRow.remove();
-    }
-});
-
-    // Check if we need to show a "No results matching" state
     let noDataRow = document.querySelector('#expenseTableBody .search-no-data');
     if (!hasVisibleRows && filter !== '') {
         if (!noDataRow) {
